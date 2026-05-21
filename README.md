@@ -1,8 +1,6 @@
 # Documentación Tecnica - PhysioScanWeb
 A continuación se presenta la documentación tecnica correspondiente al proyecto PhysioScanWeb, desarrollado a lo largo de 5 sesiones.
-***
-## FASE 1 - Entorno de Trabajo
-***
+
 ### Entorno Virtual (Linux Mint)
 Para sistemas basados en GNU/Linux debemos hacer uso de la herramienta *UV*, esta nos permite crear entornos virtuales con diferentes versiones de Python sin la necesidad de intalar Python en nuestro sistema global.
 ~~~sh
@@ -30,8 +28,12 @@ uv pip install -r requirements.txt
 # numpy
 ~~~
 > El archivo *requirements.txt* contiene todas las librerias que necesitamos
-***
-## FASE 2 - Desarrollo de Motor de Vision
-***
+
+### Ejecución de modulos Python
+Para ejecutar modulos independientes debemos seguir la siguiente estructura, para garantizar que el modulo ejecutado pueda comunicarse con los demas módulos:
+~~~sh
+#python -m paquete.modulo
+python -m tests.test_pose # Por ejemplo
+~~~
 
 
