@@ -1,7 +1,9 @@
 # Documentación Tecnica - PhysioScanWeb
 A continuación se presenta la documentación tecnica correspondiente al proyecto PhysioScanWeb, desarrollado a lo largo de 5 sesiones.
-
-## Entorno Virtual (Linux Mint)
+***
+## FASE 1 - Entorno de Trabajo
+***
+### Entorno Virtual (Linux Mint)
 Para sistemas basados en GNU/Linux debemos hacer uso de la herramienta *UV*, esta nos permite crear entornos virtuales con diferentes versiones de Python sin la necesidad de intalar Python en nuestro sistema global.
 ~~~sh
 uv venv --python 3.11 # Se creara una carpeta .venv
@@ -9,7 +11,15 @@ uv venv --python 3.11 # Se creara una carpeta .venv
 source .venv/bin/activate
 # (PhysioScanWeb) user@mypc:
 ~~~
-## Instalación de Librerias
+
+### Entorno Virtual (Windows)
+Para sistemas Windows debemos crear un entorno virtual mediante los siguiente comandos:
+~~~sh
+python -m venv .venv
+pip install -r requirements.txt
+~~~
+
+### Instalación de Librerias
 Usaremos *uv* para instalar las librerias que necesitamos.
 ~~~sh
 uv pip install -r requirements.txt
@@ -20,4 +30,8 @@ uv pip install -r requirements.txt
 # numpy
 ~~~
 > El archivo *requirements.txt* contiene todas las librerias que necesitamos
+***
+## FASE 2 - Desarrollo de Motor de Vision
+***
+
 
