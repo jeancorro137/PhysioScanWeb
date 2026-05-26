@@ -1,3 +1,4 @@
+import cv2
 import mediapipe as mp
 
 
@@ -24,5 +25,23 @@ class PoseRenderer:
                 results.pose_landmarks,
                 self.mp_pose.POSE_CONNECTIONS,
             )
+
+        return frame
+
+    def draw_angle(self, frame, text, x, y):
+        """
+        Dibuja un texto sobre el frame.
+        """
+
+        cv2.putText(
+            frame,
+            text,
+            (x, y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 255, 0),
+            2,
+            cv2.LINE_AA
+        )
 
         return frame
