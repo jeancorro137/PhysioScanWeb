@@ -19,6 +19,7 @@ class VideoProcessor:
         self.mp_pose = mp.solutions.pose
 
         self.cap = cv2.VideoCapture(0)
+
         # Buffers Moving Average
         self.left_shoulder_buffer = deque(maxlen=5)
         self.right_shoulder_buffer = deque(maxlen=5)
@@ -30,10 +31,18 @@ class VideoProcessor:
         success, frame = self.cap.read()
 
         if not success:
-            return None
+            return None, None
 
         # Detectar pose
         results = self.detector.detect_pose(frame)
+
+        # Diccionario de métricas
+        metrics = {
+            "cervical": None,
+            "left_shoulder": None,
+            "right_shoulder": None,
+            "head": None
+        }
 
         # Calcular ángulos si hay landmarks
         if results.pose_landmarks:
@@ -75,10 +84,17 @@ class VideoProcessor:
                 ]
             )
 
-            self.left_shoulder_buffer.append(left_shoulder_angle)
+            self.left_shoulder_buffer.append(
+                left_shoulder_angle
+            )
+
             left_shoulder_angle = sum(
                 self.left_shoulder_buffer
             ) / len(self.left_shoulder_buffer)
+
+            metrics["left_shoulder"] = int(
+            left_shoulder_angle
+            )
 
             x_l = int(left_shoulder.x * w)
             y_l = int(left_shoulder.y * h)
@@ -122,12 +138,18 @@ class VideoProcessor:
                     right_hip.z
                 ]
             )
+
             self.right_shoulder_buffer.append(
                 right_shoulder_angle
             )
+
             right_shoulder_angle = sum(
                 self.right_shoulder_buffer
             ) / len(self.right_shoulder_buffer)
+
+            metrics["right_shoulder"] = int(
+            right_shoulder_angle
+            )
 
             x_r = int(right_shoulder.x * w)
             y_r = int(right_shoulder.y * h)
@@ -140,7 +162,7 @@ class VideoProcessor:
             )
 
             # =========================
-            # CABEZA-HOMBROS (frontal)
+            # CABEZA-HOMBROS
             # =========================
             nose = landmarks[
                 self.mp_pose.PoseLandmark.NOSE.value
@@ -172,6 +194,10 @@ class VideoProcessor:
                 self.head_buffer
             ) / len(self.head_buffer)
 
+            metrics["head"] = int(
+                head_shoulders_angle
+            )
+
             x_n = int(nose.x * w)
             y_n = int(nose.y * h)
 
@@ -184,12 +210,12 @@ class VideoProcessor:
 
             # =========================
             # CERVICAL CLINICA
-            # Oreja - Hombro - Cadera
+            # Oreja-Hombro-Cadera
             # =========================
             left_ear = landmarks[
                 self.mp_pose.PoseLandmark.LEFT_EAR.value
             ]
-            
+
             cervical_angle = calculate_angle(
                 [
                     left_ear.x,
@@ -207,6 +233,7 @@ class VideoProcessor:
                     left_hip.z
                 ]
             )
+
             self.cervical_buffer.append(
                 cervical_angle
             )
@@ -214,10 +241,14 @@ class VideoProcessor:
             cervical_angle = sum(
                 self.cervical_buffer
             ) / len(self.cervical_buffer)
-            
+
+            metrics["cervical"] = int(
+                cervical_angle
+            )
+
             x_c = int(left_ear.x * w)
             y_c = int(left_ear.y * h) - 40
-            
+
             frame = self.renderer.draw_angle(
                 frame,
                 f"{int(cervical_angle)} cervical",
@@ -226,9 +257,12 @@ class VideoProcessor:
             )
 
         # Dibujar pose
-        frame = self.renderer.draw_pose(frame, results)
+        frame = self.renderer.draw_pose(
+            frame,
+            results
+        )
 
-        return frame
+        return frame, metrics
 
     def release(self):
 
