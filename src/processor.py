@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import time
 
 from src.pose_detector import PoseDetector
 from src.renderer import PoseRenderer
@@ -14,11 +15,19 @@ class VideoProcessor:
 
     def __init__(self):
 
+        self.frame_count = 0
+
+        self.prev_time = time.time()
+        self.fps = 0
+
         self.detector = PoseDetector()
         self.renderer = PoseRenderer()
         self.mp_pose = mp.solutions.pose
 
         self.cap = cv2.VideoCapture(0)
+        # Modificar resolucion de la camara
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         # Buffers Moving Average
         self.left_shoulder_buffer = deque(maxlen=5)
@@ -30,8 +39,19 @@ class VideoProcessor:
 
         success, frame = self.cap.read()
 
+        current_time = time.time()
+        instant_fps = 1 / (current_time - self.prev_time)
+        # Suavizado exponencial
+        self.fps = (self.fps * 0.9) + (instant_fps * 0.1)
+        self.prev_time = current_time
+
+        self.frame_count += 1
+
         if not success:
             return None, None
+
+        #frame = cv2.resize(frame, (480, 360))
+        frame = cv2.resize(frame, (640, 480))
 
         # Detectar pose
         results = self.detector.detect_pose(frame)
@@ -262,6 +282,7 @@ class VideoProcessor:
             results
         )
 
+        metrics["fps"] = int(self.fps)
         return frame, metrics
 
     def release(self):

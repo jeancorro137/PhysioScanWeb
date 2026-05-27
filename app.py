@@ -232,7 +232,7 @@ if st.session_state.camera_running:
 
             fps_placeholder.metric(
                 "FPS",
-                f"{int(fps)}"
+                metrics.get("fps", 0)
             )
 
             if frame is not None:
