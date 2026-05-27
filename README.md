@@ -265,4 +265,6 @@ Uso libre para aprendizaje e investigación.
 - Comunidad OpenCV
 - Streamlit
 - Python Software Foundation
+- Talento Tech
+- Docentes de Talento Tech
 
